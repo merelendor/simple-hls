@@ -6,10 +6,15 @@ class Transcode {
     inputPath: string;
     outputPath: string;
     options: any | undefined;
-    constructor(inputPath : string, outputPath : string, options : any){
+	id: string | undefined;
+	onProgress: (arg0: string) => void;
+
+	constructor(inputPath : string, outputPath : string, options : any, id: string, onProgress: (arg0: string) => void){
         this.inputPath = inputPath;
         this.outputPath = outputPath;
         this.options = options || {};
+		this.id = id || "";
+		this.onProgress = onProgress || function(arg0: string){}
     }
 
     transcode(){
@@ -22,20 +27,22 @@ class Transcode {
           showLogs = false;
         }
         ffmpeg.stdout.on('data', (data: any) =>  {
+			this.onProgress(data.toString())
           if (showLogs){
-            console.log(data.toString());
+            console.log(this.id, data.toString());
           }
         });
 
         ffmpeg.stderr.on('data', (data: any) =>  {
+			this.onProgress(data.toString())
           if (showLogs){
-            console.log(data.toString());
+            console.log(this.id, data.toString());
           }
         });
 
         ffmpeg.on('exit', (code: any) =>  {
           if (showLogs){
-            console.log(`Child exited with code ${code}`);
+            console.log(this.id, `Child exited with code ${code}`);
           }
           if (code == 0) return resolve(masterPlaylist);
 

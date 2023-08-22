@@ -5,7 +5,7 @@ import path from 'path';
 jest.setTimeout(500000);
 
 test('Transcode', async () => {
-    const t = new Transcoder(`${__dirname}/test.mp4`, `${__dirname}/output`, {showLogs:false});
+    const t = new Transcoder(`${__dirname}/test.mp4`, `${__dirname}/output`, {showLogs:false}, "", () => {});
     const hlsPath = await t.transcode();
     await clearOutputFolder(`${__dirname}/output`)
     expect(hlsPath).toContain('index.m3u8');
